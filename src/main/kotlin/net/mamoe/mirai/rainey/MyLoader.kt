@@ -1,16 +1,20 @@
 package net.mamoe.mirai.rainey
 
-import kotlinx.coroutines.*
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.join
-import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.events.*
+import net.mamoe.mirai.event.events.MemberJoinEvent
+import net.mamoe.mirai.event.events.MemberNudgedEvent
+import net.mamoe.mirai.event.events.MessageRecallEvent
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeMessages
+import net.mamoe.mirai.join
+import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.utils.BotConfiguration
+import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
+
 
 suspend fun main() {
     val qqId = 2028829835L//Bot的QQ号，需为Long类型，在结尾处添加大写L
@@ -18,7 +22,10 @@ suspend fun main() {
     val raineyCoin = mutableMapOf(2028829835L to 0);
     val raineyUmbrella = mutableMapOf(2028829835L to 0);
     val raineyBiscuit = mutableMapOf(2028829835L to 0);
-    val miraiBot = Bot(qqId, password).alsoLogin()//新建Bot并登录
+    val configuration = BotConfiguration()
+    configuration.protocol = MiraiProtocol.ANDROID_PAD
+    configuration.fileBasedDeviceInfo("deviceInfo.json")
+    val miraiBot = Bot(qqId, password, configuration).alsoLogin()//新建Bot并登录
     miraiBot.subscribeMessages {
         "你好" reply "你好。"
         atBot(){
