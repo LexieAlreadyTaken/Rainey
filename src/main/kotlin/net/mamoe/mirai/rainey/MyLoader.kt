@@ -30,12 +30,16 @@ suspend fun main() {
     val configuration = BotConfiguration()
     var lastMessage = ""
     var thisMessage: String
-    var fudued = false
+    var fudued = true
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
     val miraiBot = Bot(qqId, password, configuration).alsoLogin()//新建Bot并登录
     miraiBot.subscribeMessages {
         "你好" reply "你好。"
+
+        (startsWith("阿雨") and contains("开始复读")){
+            fudued = false
+        }
 
         (contains("")){
             thisMessage = message.contentToString()
@@ -47,12 +51,6 @@ suspend fun main() {
                         fudued=false
                     }
                 }, Date(), 10000)
-                /*Timer().schedule(object:TimerTask(){
-                    override fun run() {
-                        println(fudued)
-                    }
-                }, Date(), 1000)
-                 */
             }
             lastMessage = thisMessage
         }
