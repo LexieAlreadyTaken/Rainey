@@ -2,6 +2,7 @@ package net.mamoe.mirai.rainey
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.alsoLogin
+import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
 import net.mamoe.mirai.event.events.MemberJoinEvent
@@ -22,6 +23,7 @@ suspend fun main() {
     val raineyCoin = mutableMapOf(2028829835L to 0);
     val raineyUmbrella = mutableMapOf(2028829835L to 0);
     val raineyBiscuit = mutableMapOf(2028829835L to 0);
+    val definedShop = arrayOfNulls<MutableMap<Long,Int>>(0)
     val configuration = BotConfiguration()
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
@@ -33,12 +35,12 @@ suspend fun main() {
             reply(At(sender as Member)+"（轻笑）")
         }
 
-        (matching(Regex("阿雨")) or matching(Regex("阿雨.{1,2}"))){
+        (matching(Regex("阿雨.?"))){
             reply("是我。怎么了……")
         }
 
         (startsWith("阿雨") and contains("抱")){
-            reply("（迟疑了一下，然后给了你一个小心翼翼的拥抱）这样……可以了吗？（笑）")
+            reply("（迟疑了一下，然后给了你一个小心翼翼的拥抱）这样……可以了吗？")
         }
         (startsWith("阿雨") and contains("亲")){
             reply("（似乎不可思议地看着你）妈妈说……这样的事……只能和喜欢的人做哦？")
@@ -107,6 +109,17 @@ suspend fun main() {
             if(!anything)
                 replys += "啊，仓库里好像什么都没有的样子……\n"
             reply(replys)
+        }
+
+        (startsWith("阿雨") and contains("随机")){
+            val m = Regex(""".*随机.*([0-9]+).*([0-9]+).*""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    for(i in m.groupValues){
+                        reply(i)
+                    }
+                }
+            }
         }
 
         (contains("阿雨") and contains("谁")){
