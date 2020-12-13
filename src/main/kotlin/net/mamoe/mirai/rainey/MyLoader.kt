@@ -153,9 +153,13 @@ suspend fun main() {
                     shopName = shopName.plus(m.groupValues[1])
                     definedShop = definedShop.plus(mutableMapOf())
                     shopCost = shopCost.plus(m.groupValues[2].toInt())
-                    for(i in shopName.indices)
-                        reply(i.toString()+" "+shopName[i])
                 }
+            }
+        }
+
+        for(i in shopName.indices){
+            startsWith("∞¢”Í≤‚ ‘"){
+                reply(shopName[i])
             }
         }
 
