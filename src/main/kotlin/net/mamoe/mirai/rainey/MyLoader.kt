@@ -38,21 +38,21 @@ suspend fun main() {
         "ÄãºÃ" reply "ÄãºÃ¡£"
 
         (startsWith("°¢Óê") and contains("¿ªÊ¼¸´¶Á")){
-            fudued[0]=true
+            fudued.set(0,false)
         }
 
         (startsWith("°¢Óê") and contains("Í£Ö¹¸´¶Á")){
-            fudued[0] = false
+            fudued.set(0,true)
         }
 
         (contains("")){
             thisMessage = message.contentToString()
             if(thisMessage == lastMessage && !fudued[0]!!) {
                 reply(thisMessage)
-                fudued[0] = true
+                fudued.set(0,true)
                 Timer().schedule(object:TimerTask(){
                     override fun run() {
-                        fudued[0]=false
+                        fudued.set(0,false)
                     }
                 }, Date(), 10000)
             }
