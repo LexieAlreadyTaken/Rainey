@@ -15,6 +15,7 @@ import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
+import java.util.*
 
 
 suspend fun main() {
@@ -25,11 +26,29 @@ suspend fun main() {
     val raineyBiscuit = mutableMapOf(2028829835L to 0);
     val definedShop = arrayOfNulls<MutableMap<Long,Int>>(0)
     val configuration = BotConfiguration()
+    var lastMessage = ""
+    var thisMessage: String
+    var fudued = false
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
     val miraiBot = Bot(qqId, password, configuration).alsoLogin()//新建Bot并登录
     miraiBot.subscribeMessages {
         "你好" reply "你好。"
+
+        (contains("")){
+            thisMessage = message.contentToString()
+            if(thisMessage == lastMessage && !fudued) {
+                reply(thisMessage)
+                fudued = true
+                Timer().schedule(object:TimerTask(){
+                    override fun run() {
+                        fudued=false
+                    }
+                }, Date(), 10000)
+            }
+            lastMessage = thisMessage
+        }
+
         atBot(){
             reply("来而不往非礼也，所以……")
             reply(At(sender as Member)+"（轻笑）")
@@ -115,9 +134,8 @@ suspend fun main() {
             val m = Regex(""".*随机.*?([0-9]+).*?([0-9]+).*""").find(message.contentToString())
             if (m != null) {
                 if(m.groupValues.isNotEmpty()){
-                    for(i in m.groupValues){
-                        reply(i)
-                    }
+                    val a = (m.groupValues[1].toInt()..m.groupValues[2].toInt()).random()
+                    reply("随机生成结果为$a，请收好。")
                 }
             }
         }
