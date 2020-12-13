@@ -112,7 +112,7 @@ suspend fun main() {
         }
 
         (startsWith("°¢Óê") and contains("Ëæ»ú")){
-            val m = Regex(""".*Ëæ»ú.*([0-9]+).*([0-9]+).*""").find(message.contentToString())
+            val m = Regex(""".*Ëæ»ú.*?([0-9]+).*?([0-9]+).*""").find(message.contentToString())
             if (m != null) {
                 if(m.groupValues.isNotEmpty()){
                     for(i in m.groupValues){
