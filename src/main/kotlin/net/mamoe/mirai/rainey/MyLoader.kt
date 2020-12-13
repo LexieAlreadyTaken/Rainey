@@ -39,20 +39,17 @@ suspend fun main() {
 
         (startsWith("°¢Óê") and contains("¿ªÊ¼¸´¶Á")){
             fudued.set(0,false)
-            reply(fudued[0].toString())
         }
 
         (startsWith("°¢Óê") and contains("Í£Ö¹¸´¶Á")){
             fudued.set(0,true)
-            reply(fudued[0].toString())
         }
 
         (contains("")){
             thisMessage = message.contentToString()
-            if(thisMessage == lastMessage && !fudued[0]!!) {
+            if(thisMessage == lastMessage && fudued.get(0)==false) {
                 reply(thisMessage)
                 fudued.set(0,true)
-                reply(fudued[0].toString())
                 Timer().schedule(object:TimerTask(){
                     override fun run() {
                         fudued.set(0,false)
