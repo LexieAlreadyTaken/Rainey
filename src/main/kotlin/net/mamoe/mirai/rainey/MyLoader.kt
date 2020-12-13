@@ -24,7 +24,9 @@ suspend fun main() {
     val raineyCoin = mutableMapOf(2028829835L to 0);
     val raineyUmbrella = mutableMapOf(2028829835L to 0);
     val raineyBiscuit = mutableMapOf(2028829835L to 0);
-    val definedShop = arrayOfNulls<MutableMap<Long,Int>>(0)
+    var definedShop = emptyArray<MutableMap<Long,Int>>()
+    var shopName = emptyArray<String>()
+    var shopCost = emptyArray<Int>()
     val configuration = BotConfiguration()
     var lastMessage = ""
     var thisMessage: String
@@ -45,6 +47,11 @@ suspend fun main() {
                         fudued=false
                     }
                 }, Date(), 10000)
+                Timer().schedule(object:TimerTask(){
+                    override fun run() {
+                        println(fudued)
+                    }
+                }, Date(), 1000)
             }
             lastMessage = thisMessage
         }
@@ -100,7 +107,6 @@ suspend fun main() {
                 reply("很高兴来这里买我的雨伞。不过……你现在还没有足够的雨丝呢？")
         }
 
-
         (startsWith("阿雨")and contains("买")and contains("饼干")){
             if(sender.id in raineyCoin && (raineyCoin[sender.id]!! >=15)){
                 raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(15)
@@ -137,6 +143,32 @@ suspend fun main() {
                     val a = (m.groupValues[1].toInt()..m.groupValues[2].toInt()).random()
                     reply("随机生成结果为$a，请收好。")
                 }
+            }
+        }
+
+        (startsWith("阿雨") and contains("上架")){
+            val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    shopName = shopName.plus(m.groupValues[1])
+                    definedShop = definedShop.plus(mutableMapOf())
+                    shopCost = shopCost.plus(m.groupValues[2].toInt())
+                }
+            }
+        }
+
+        for(i in shopName.indices){
+            (startsWith("阿雨") and contains("买") and contains(shopName[i])){
+                if(sender.id in raineyCoin && (raineyCoin[sender.id]!! >= shopCost[i])){
+                    raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(shopCost[i])
+                    if(sender.id in definedShop[i])
+                        definedShop[i][sender.id] = definedShop[i][sender.id]!!.plus(1)
+                    else
+                        definedShop[i][sender.id] = 1
+                    reply("很高兴来这里买我的"+shopName[i]+"。你现在还有"+raineyCoin[sender.id]+"个雨丝。……欢迎你们来我这里寄放商品。")
+                }
+                else
+                    reply("很高兴来这里买我的"+shopName[i]+"。不过……你现在还没有足够的雨丝呢？")
             }
         }
 
