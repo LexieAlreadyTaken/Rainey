@@ -153,6 +153,7 @@ suspend fun main() {
                     shopName = shopName.plus(m.groupValues[1])
                     definedShop = definedShop.plus(mutableMapOf())
                     shopCost = shopCost.plus(m.groupValues[2].toInt())
+                    reply(shopName.last()+shopCost.last().toString())
                 }
             }
         }
