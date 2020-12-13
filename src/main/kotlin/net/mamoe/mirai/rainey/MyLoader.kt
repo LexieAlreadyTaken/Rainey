@@ -158,26 +158,22 @@ suspend fun main() {
             }
         }
 
-        for(i in shopName.indices){
-            startsWith("阿雨测试"){
-                reply(shopName[i])
+        (startsWith("阿雨") and contains("买")){
+            for(i in shopName.indices) {
+                if(message.contentToString().contains(shopName[i])) {
+                    if (sender.id in raineyCoin && (raineyCoin[sender.id]!! >= shopCost[i])) {
+                        raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(shopCost[i])
+                        if (sender.id in definedShop[i])
+                            definedShop[i][sender.id] = definedShop[i][sender.id]!!.plus(1)
+                        else
+                            definedShop[i][sender.id] = 1
+                        reply("很高兴来这里买我的" + shopName[i] + "。你现在还有" + raineyCoin[sender.id] + "个雨丝。……欢迎你们来我这里寄放商品。")
+                    } else
+                        reply("很高兴来这里买我的" + shopName[i] + "。不过……你现在还没有足够的雨丝呢？")
+                }
             }
         }
 
-        for(i in shopName.indices){
-            (startsWith("阿雨") and contains("买") and contains(shopName[i])){
-                if(sender.id in raineyCoin && (raineyCoin[sender.id]!! >= shopCost[i])){
-                    raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(shopCost[i])
-                    if(sender.id in definedShop[i])
-                        definedShop[i][sender.id] = definedShop[i][sender.id]!!.plus(1)
-                    else
-                        definedShop[i][sender.id] = 1
-                    reply("很高兴来这里买我的"+shopName[i]+"。你现在还有"+raineyCoin[sender.id]+"个雨丝。……欢迎你们来我这里寄放商品。")
-                }
-                else
-                    reply("很高兴来这里买我的"+shopName[i]+"。不过……你现在还没有足够的雨丝呢？")
-            }
-        }
 
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
