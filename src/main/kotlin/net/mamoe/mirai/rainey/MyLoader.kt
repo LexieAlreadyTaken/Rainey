@@ -30,7 +30,7 @@ suspend fun main() {
     val configuration = BotConfiguration()
     var lastMessage = ""
     var thisMessage: String
-    var fudued = true
+    var fudued = arrayOfNulls<Boolean>(1)
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
     val miraiBot = Bot(qqId, password, configuration).alsoLogin()//ÐÂ½¨Bot²¢µÇÂ¼
@@ -38,17 +38,21 @@ suspend fun main() {
         "ÄãºÃ" reply "ÄãºÃ¡£"
 
         (startsWith("°¢Óê") and contains("¿ªÊ¼¸´¶Á")){
-            fudued = false
+            fudued[0]=true
+        }
+
+        (startsWith("°¢Óê") and contains("Í£Ö¹¸´¶Á")){
+            fudued[0] = false
         }
 
         (contains("")){
             thisMessage = message.contentToString()
-            if(thisMessage == lastMessage && !fudued) {
+            if(thisMessage == lastMessage && !fudued[0]!!) {
                 reply(thisMessage)
-                fudued = true
+                fudued[0] = true
                 Timer().schedule(object:TimerTask(){
                     override fun run() {
-                        fudued=false
+                        fudued[0]=false
                     }
                 }, Date(), 10000)
             }
