@@ -50,11 +50,11 @@ suspend fun main() {
             if(thisMessage == lastMessage && fudued.get(0)==false) {
                 reply(thisMessage)
                 fudued.set(0,true)
-                Timer().schedule(object:TimerTask(){
+                /*Timer().schedule(object:TimerTask(){
                     override fun run() {
                         fudued.set(0,false)
                     }
-                }, Date(), 10000)
+                }, Date(), 10000)*/
             }
             lastMessage = thisMessage
         }
