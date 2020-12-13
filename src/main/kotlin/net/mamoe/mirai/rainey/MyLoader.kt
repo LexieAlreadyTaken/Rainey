@@ -47,11 +47,12 @@ suspend fun main() {
                         fudued=false
                     }
                 }, Date(), 10000)
-                Timer().schedule(object:TimerTask(){
+                /*Timer().schedule(object:TimerTask(){
                     override fun run() {
                         println(fudued)
                     }
                 }, Date(), 1000)
+                 */
             }
             lastMessage = thisMessage
         }
