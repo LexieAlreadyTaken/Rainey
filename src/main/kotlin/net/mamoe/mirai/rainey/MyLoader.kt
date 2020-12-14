@@ -122,9 +122,8 @@ suspend fun main() {
                                             DBConn.query("insert into stock_" + inShop.getInt("id") + " values (" + sender.id + ", 1);")
                                     }
                                     reply(
-                                        "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" + inShop.getString(
-                                            "comment"
-                                        )
+                                        "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
+                                                (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
                                     )
                                 }
                             } else
@@ -146,7 +145,7 @@ suspend fun main() {
                     if(tableI!=null) {
                         if (tableI.isBeforeFirst) {
                             tableI.next()
-                            replys += inShop.getString("name") + "*"+tableI.getString("copies"+";\n")
+                            replys += inShop.getString("name") + "*"+tableI.getString("copies")+"\n"
                             anything = true
                         }
                     }
@@ -162,16 +161,17 @@ suspend fun main() {
             val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
             if (m != null) {
                 if(m.groupValues.isNotEmpty()){
-                    val inShop = DBConn.query("select * from shop where name = "+m.groupValues[1]+";")
+                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
                     if(inShop != null) {
                         if(inShop.isBeforeFirst)
                             reply("看样子商店里已经有"+m.groupValues[1]+"了呢。")
                         else{
-                            DBConn.query("insert into shop (name, cost) values (\""+m.groupValues[1]+"\", "+m.groupValues[2]+", );")
+                            DBConn.query("insert into shop (name, cost) values (\""+m.groupValues[1]+"\", "+m.groupValues[2]+");")
                             //还是不知道怎么获取chatgroup！
                             val newId = DBConn.query("select max(id) from shop;")
                             if(newId != null){
-                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" (-> customer_id integer primary key, copies integer, chatgroup integer);")
+                                newId.next()
+                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" ( customer_id integer primary key, copies integer, chatgroup integer);")
                             }
                         }
                     }
