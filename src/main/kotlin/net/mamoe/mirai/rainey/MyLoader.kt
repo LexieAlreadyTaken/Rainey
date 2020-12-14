@@ -5,6 +5,7 @@ import net.mamoe.mirai.alsoLogin
 import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.event.events.BotActiveEvent
 import net.mamoe.mirai.event.events.MemberJoinEvent
 import net.mamoe.mirai.event.events.MemberNudgedEvent
 import net.mamoe.mirai.event.events.MessageRecallEvent
@@ -24,7 +25,9 @@ suspend fun main() {
     val configuration = BotConfiguration()
     var lastMessage = ""
     var thisMessage: String
-    var fudued = arrayOfNulls<Boolean>(1)
+    val fudued = arrayOfNulls<Boolean>(1)
+    val retractOn = arrayOfNulls<Boolean>(1)
+    //var welcomeMessage : String
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
 
@@ -34,12 +37,25 @@ suspend fun main() {
         /*复读之类的娱乐性操作*/
         "你好" reply "你好。"
 
+        (case("on")){
+            fudued.set(0,false)
+            retractOn.set(0,false)
+        }
+
         (startsWith("阿雨") and contains("开始复读")){
             fudued.set(0,false)
         }
 
         (startsWith("阿雨") and contains("停止复读")){
             fudued.set(0,true)
+        }
+
+        (startsWith("阿雨") and contains("监视撤回")){
+            retractOn.set(0,false)
+        }
+
+        (startsWith("阿雨") and contains("自由撤回")){
+            retractOn.set(0,false)
         }
 
         (contains("")){
@@ -181,13 +197,13 @@ suspend fun main() {
                             if(newId != null){
                                 newId.next()
                                 DBConn.query( "create table stock_"+newId.getInt("max(id)")+" ( customer_id integer primary key, copies integer, chatgroup integer);")
+                                reply("已经上架“"+m.groupValues[1]+"”，每份的价格是"+m.groupValues[2]+"雨丝。")
                             }
                         }
                     }
                 }
             }
         }
-
 
         (startsWith("阿雨") and contains("下架")){
             val m = Regex(""".*下架.*?“(.+)”.*?""").find(message.contentToString())
@@ -201,6 +217,7 @@ suspend fun main() {
                             if(newId != null){
                                 newId.next()
                                 DBConn.query( "drop table stock_"+newId.getInt("max(id)")+";")
+                                reply("已经下架“"+m.groupValues[1]+"”，希望你接下来的生活也愉快。")
                             }
                         }
                         else{
@@ -228,6 +245,20 @@ suspend fun main() {
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
         }
+
+        (contains("阿雨") and contains("帮助")){
+            reply("""阿雨功能说明书（2020年12月14日）
+                |0——几乎所有功能都需要在句子的开头召唤阿雨。除了撤回和自动复读。
+                |1——复读：可以通过“开始复读”和“停止复读”切换阿雨的复读机状态。
+                |2——撤回：可以通过“监视撤回”和“自由撤回”切换阿雨的撤回监视状态。
+                |3——进群欢迎：暂时不能修改（因为我还无法判断消息来自的群，会把所有有阿雨群的欢迎词都改了）
+                |4——随机数：只要召唤阿雨，说出“随机”并带上两个数字，就可以生成随机数了。
+                |5——签到：可以通过召唤阿雨并签到获得雨丝。雨丝可以购买商店内的物品。
+                |6——商店：默认的货物有雨伞和饼干。也可以上架和下架自己的货物。
+                |7——上架：召唤阿雨，说出“上架”，把要上架的货物名写在双引号里，然后写上价格。
+                |8——下架：召唤阿雨，说出“下架”，把要下架的货物名写在双引号里。
+            """.trimMargin())
+        }
     }
     miraiBot.subscribeAlways<MemberJoinEvent> {
         it.group.sendMessage(PlainText("欢迎 ${it.member.nameCardOrNick} 来到这个群。很高兴能与更多的伙伴玩耍。"))
@@ -236,7 +267,8 @@ suspend fun main() {
         it.group.sendMessage(PlainText("${it.from.nameCardOrNick}？……如果是你，也就算了。"))
     }
     miraiBot.subscribeAlways<MessageRecallEvent.GroupRecall> {
-        it.group.sendMessage(PlainText("撤回？……阿雨看见了。"))
+        if(retractOn.get(0)==false)
+            it.group.sendMessage(PlainText("撤回？……阿雨看见了。"))
     }
 
     miraiBot.join() // 等待 Bot 离线, 避免主线程退出
