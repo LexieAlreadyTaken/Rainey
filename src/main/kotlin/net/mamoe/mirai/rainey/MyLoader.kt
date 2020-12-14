@@ -31,6 +31,7 @@ suspend fun main() {
     val miraiBot = Bot(qqId, password, configuration).alsoLogin()//新建Bot并登录
     DBConn.getConnection();
     miraiBot.subscribeMessages {
+        /*复读之类的娱乐性操作*/
         "你好" reply "你好。"
 
         (startsWith("阿雨") and contains("开始复读")){
@@ -55,6 +56,10 @@ suspend fun main() {
             lastMessage = thisMessage
         }
 
+
+
+
+        /*“人性化”的操作*/
         atBot(){
             reply("来而不往非礼也，所以……")
             reply(At(sender as Member)+"（轻笑）")
@@ -77,6 +82,10 @@ suspend fun main() {
             reply("（脸迅速地飞红，转过身去）啊啊啊啊啊！变态啊！")
         }
 
+
+
+
+        /*商店有关的操作*/
         (startsWith("阿雨") and contains("签到")){
             val randNum = (1..20).random()
             reply("谢谢你来看我。这里的"+randNum+"个雨丝你可以拿走了……")
@@ -126,14 +135,14 @@ suspend fun main() {
                                                 (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
                                     )
                                 }
-                            } else
-                                reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
+                                else
+                                    reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
+                            }
                         }
                     }
                 }
             }
         }
-
 
         (startsWith("阿雨") and contains("仓库")){
             var replys = "嗯，让我看看"+senderName+"仓库里有什么……\n"
@@ -179,7 +188,33 @@ suspend fun main() {
             }
         }
 
-    /*不需要数据库的功能*/
+
+        (startsWith("阿雨") and contains("下架")){
+            val m = Regex(""".*下架.*?“(.+)”.*?""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
+                    if(inShop != null) {
+                        if(inShop.isBeforeFirst) {
+                            DBConn.query("delete from shop where name = \""+m.groupValues[1]+"\";")
+                            val newId = DBConn.query("select max(id) from shop;")
+                            if(newId != null){
+                                newId.next()
+                                DBConn.query( "drop table stock_"+newId.getInt("max(id)")+";")
+                            }
+                        }
+                        else{
+                            reply("看起来商店里还没有"+m.groupValues[1]+"哦？")
+                        }
+                    }
+                }
+            }
+        }
+
+
+
+
+    /*其他不需要数据库的功能*/
         (startsWith("阿雨") and contains("随机")){
             val m = Regex(""".*随机.*?([0-9]+).*?([0-9]+).*""").find(message.contentToString())
             if (m != null) {
