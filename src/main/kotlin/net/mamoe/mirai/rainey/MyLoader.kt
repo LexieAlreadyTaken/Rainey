@@ -19,7 +19,7 @@ import java.util.*
 
 
 suspend fun main() {
-    val qqId = 3208445592L//Bot的QQ号，需为Long类型，在结尾处添加大写L
+    val qqId = 2028829835L//Bot的QQ号，需为Long类型，在结尾处添加大写L
     val password = "ArcosDorados1234"//Bot的密码
     val configuration = BotConfiguration()
     var lastMessage = ""
@@ -92,9 +92,11 @@ suspend fun main() {
         (startsWith("阿雨") and contains("雨丝")){
             val queryRes = DBConn.query("select coin from customer where id = "+sender.id+";")
             if(queryRes!=null) {
-                if (queryRes.isBeforeFirst)
-                    reply("你现在的雨丝有"+queryRes.getString("coin")+"个这么多呢！需要换些什么吗？")
-                else
+                if (queryRes.isBeforeFirst) {
+                    queryRes.next()
+                    reply("你现在的雨丝有" + queryRes.getString("coin") + "个这么多呢！需要换些什么吗？")
+                }
+                    else
                     reply("你现在还没有雨丝呢。要多来看看我哦……？")
             }
         }
@@ -107,16 +109,24 @@ suspend fun main() {
                         val cost = inShop.getInt("cost")
                         val coinNum = DBConn.query("select coin from customer where id = "+sender.id+";")
                         if(coinNum!=null) {
-                            if (coinNum.isBeforeFirst && coinNum.getInt("coin")>inShop.getInt("cost")) {
-                                DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
-                                val senderInShop = DBConn.query("select * from stock_"+inShop.getInt("id")+";")
-                                if(senderInShop != null){
-                                    if(senderInShop.isBeforeFirst)
-                                        DBConn.query("update stock_"+inShop.getInt("id")+" set copies = copies + 1;")
-                                    else
-                                        DBConn.query("insert into stock_"+inShop.getInt("id")+" values ("+sender.id+", 1);")
+                            if (coinNum.isBeforeFirst) {
+                                coinNum.next()
+                                if(coinNum.getInt("coin")>inShop.getInt("cost")) {
+                                    DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
+                                    val senderInShop =
+                                        DBConn.query("select * from stock_" + inShop.getInt("id") + ";")
+                                    if (senderInShop != null) {
+                                        if (senderInShop.isBeforeFirst)
+                                            DBConn.query("update stock_" + inShop.getInt("id") + " set copies = copies + 1;")
+                                        else
+                                            DBConn.query("insert into stock_" + inShop.getInt("id") + " values (" + sender.id + ", 1);")
+                                    }
+                                    reply(
+                                        "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" + inShop.getString(
+                                            "comment"
+                                        )
+                                    )
                                 }
-                                reply("很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin")-cost) + "个雨丝。……"+inShop.getString("comment"))
                             } else
                                 reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
                         }
@@ -135,7 +145,8 @@ suspend fun main() {
                     val tableI = DBConn.query("select * from stock_"+inShop.getInt("id")+" where costumer_id = "+sender.id+";")
                     if(tableI!=null) {
                         if (tableI.isBeforeFirst) {
-                            replys += inShop.getString("name") + "*"+tableI.getString("copies"+"；\n")
+                            tableI.next()
+                            replys += inShop.getString("name") + "*"+tableI.getString("copies"+";\n")
                             anything = true
                         }
                     }
