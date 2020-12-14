@@ -146,7 +146,7 @@ suspend fun main() {
                                         if (senderInShop.isBeforeFirst)
                                             DBConn.query("update stock_" + inShop.getInt("id") + " set copies = copies + 1;")
                                         else
-                                            DBConn.query("insert into stock_" + inShop.getInt("id") + " values (" + sender.id + ", 1);")
+                                            DBConn.query("insert into stock_" + inShop.getInt("id") + " values (" + sender.id + ", 1,0);")
                                     }
                                     reply(
                                         "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
@@ -168,7 +168,7 @@ suspend fun main() {
             val inShop = DBConn.query("select * from shop;")
             if(inShop != null) {
                 while(inShop.next()) {
-                    val tableI = DBConn.query("select * from stock_"+inShop.getInt("id")+" where costumer_id = "+sender.id+";")
+                    val tableI = DBConn.query("select * from stock_"+inShop.getInt("id")+" where customer_id = "+sender.id+";")
                     if(tableI!=null) {
                         if (tableI.isBeforeFirst) {
                             tableI.next()
@@ -198,7 +198,7 @@ suspend fun main() {
                             val newId = DBConn.query("select max(id) from shop;")
                             if(newId != null){
                                 newId.next()
-                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" ( customer_id integer primary key, copies integer, chatgroup integer);")
+                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" ( customer_id bigint primary key, copies integer, chatgroup integer);")
                                 reply("已经上架“"+m.groupValues[1]+"”，每份的价格是"+m.groupValues[2]+"雨丝。")
                             }
                         }
