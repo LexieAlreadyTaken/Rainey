@@ -2,11 +2,10 @@ package net.mamoe.mirai.rainey
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.contact.Group
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.event.events.BotActiveEvent
 import net.mamoe.mirai.event.events.MemberJoinEvent
+import net.mamoe.mirai.event.events.MemberLeaveEvent
 import net.mamoe.mirai.event.events.MemberNudgedEvent
 import net.mamoe.mirai.event.events.MessageRecallEvent
 import net.mamoe.mirai.event.subscribeAlways
@@ -16,6 +15,9 @@ import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalTime
 import java.util.*
 
 
@@ -242,6 +244,24 @@ suspend fun main() {
             }
         }
 
+        (startsWith("阿雨") and contains("黑名单")){
+            val a = DBConn.query("select * from blocklist;")
+            var s = ""
+            var found = false
+            if(a!=null){
+                if(a.isBeforeFirst){
+                    while(a.next()){
+                        s += a.getString("id")+";\n"
+                        found = true
+                    }
+                }
+            }
+            if(!found)
+                reply("太好了，目前为止还没有黑名单呢!")
+            else
+                reply(s)
+        }
+
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
         }
@@ -269,6 +289,21 @@ suspend fun main() {
     miraiBot.subscribeAlways<MessageRecallEvent.GroupRecall> {
         if(retractOn.get(0)==false)
             it.group.sendMessage(PlainText("撤回？……阿雨看见了。"))
+    }
+    miraiBot.subscribeAlways<MemberJoinEvent>{
+        DBConn.query("insert into quitlist values("+member.id+", now());")
+    }
+    miraiBot.subscribeAlways<MemberLeaveEvent>{
+        val a = DBConn.query("select * from quitlist where id = "+member.id+";")
+        if(a!=null){
+            if(a.isBeforeFirst){
+                a.next()
+                val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                val jointime: Date = simpleDateFormat.parse(a.getString("jointime"))
+                if(Instant.now().toEpochMilli() - jointime.time < 1000*60*60*24)
+                    DBConn.query("insert into blocklist values ("+member.id+");")
+            }
+        }
     }
 
     miraiBot.join() // 等待 Bot 离线, 避免主线程退出
