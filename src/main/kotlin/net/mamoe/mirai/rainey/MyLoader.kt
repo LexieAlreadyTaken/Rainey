@@ -19,21 +19,17 @@ import java.util.*
 
 
 suspend fun main() {
-    val qqId = 2028829835L//Bot的QQ号，需为Long类型，在结尾处添加大写L
+    val qqId = 3208445592L//Bot的QQ号，需为Long类型，在结尾处添加大写L
     val password = "ArcosDorados1234"//Bot的密码
-    val raineyCoin = mutableMapOf(2028829835L to 0);
-    val raineyUmbrella = mutableMapOf(2028829835L to 0);
-    val raineyBiscuit = mutableMapOf(2028829835L to 0);
-    var definedShop = emptyArray<MutableMap<Long,Int>>()
-    var shopName = emptyArray<String>()
-    var shopCost = emptyArray<Int>()
     val configuration = BotConfiguration()
     var lastMessage = ""
     var thisMessage: String
     var fudued = arrayOfNulls<Boolean>(1)
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
+
     val miraiBot = Bot(qqId, password, configuration).alsoLogin()//新建Bot并登录
+    DBConn.getConnection();
     miraiBot.subscribeMessages {
         "你好" reply "你好。"
 
@@ -50,11 +46,11 @@ suspend fun main() {
             if(thisMessage == lastMessage && fudued.get(0)==false) {
                 reply(thisMessage)
                 fudued.set(0,true)
-                /*Timer().schedule(object:TimerTask(){
+                Timer().schedule(object:TimerTask(){
                     override fun run() {
                         fudued.set(0,false)
                     }
-                }, Date(), 10000)*/
+                }, 10000)
             }
             lastMessage = thisMessage
         }
@@ -82,63 +78,97 @@ suspend fun main() {
         }
 
         (startsWith("阿雨") and contains("签到")){
-            val a = (1..20).random()
-            reply("谢谢你来看我。这里的"+a+"个雨丝你可以拿走了……")
-            if(sender.id in raineyCoin)
-                raineyCoin[sender.id] = raineyCoin[sender.id]!!.plus(a)
-            else
-                raineyCoin[sender.id] = a
+            val randNum = (1..20).random()
+            reply("谢谢你来看我。这里的"+randNum+"个雨丝你可以拿走了……")
+            val queryRes = DBConn.query("select coin from customer where id = "+sender.id+";")
+            if(queryRes!=null) {
+                if (queryRes.isBeforeFirst)
+                    DBConn.query("update customer set coin = coin+ $randNum where id = " + sender.id + ";")
+                else
+                    DBConn.query("insert into customer values ("+sender.id+", "+randNum+");")
+            }
         }
 
         (startsWith("阿雨") and contains("雨丝")){
-            if(sender.id in raineyCoin)
-                reply("你现在的雨丝有"+raineyCoin[sender.id]+"个这么多呢！需要换些什么吗？")
-            else
-                reply("你现在还没有雨丝呢。要多来看看我哦……？")
+            val queryRes = DBConn.query("select coin from customer where id = "+sender.id+";")
+            if(queryRes!=null) {
+                if (queryRes.isBeforeFirst)
+                    reply("你现在的雨丝有"+queryRes.getString("coin")+"个这么多呢！需要换些什么吗？")
+                else
+                    reply("你现在还没有雨丝呢。要多来看看我哦……？")
+            }
         }
 
-        (startsWith("阿雨")and contains("买")and contains("伞")){
-            if(sender.id in raineyCoin && (raineyCoin[sender.id]!! >=10)){
-                raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(10)
-                if(sender.id in raineyUmbrella)
-                    raineyUmbrella[sender.id] = raineyCoin[sender.id]!!.plus(1)
-                else
-                    raineyUmbrella[sender.id] = 1
-                reply("很高兴来这里买我的雨伞。你现在还有"+raineyCoin[sender.id]+"个雨丝。……我虽然叫阿雨，但打伞也不会拦住我的哦？")
+        (startsWith("阿雨") and contains("买")){
+            val inShop = DBConn.query("select * from shop;")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    if (message.contentToString().contains(inShop.getString("name"))) {
+                        val cost = inShop.getInt("cost")
+                        val coinNum = DBConn.query("select coin from customer where id = "+sender.id+";")
+                        if(coinNum!=null) {
+                            if (coinNum.isBeforeFirst && coinNum.getInt("coin")>inShop.getInt("cost")) {
+                                DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
+                                val senderInShop = DBConn.query("select * from stock_"+inShop.getInt("id")+";")
+                                if(senderInShop != null){
+                                    if(senderInShop.isBeforeFirst)
+                                        DBConn.query("update stock_"+inShop.getInt("id")+" set copies = copies + 1;")
+                                    else
+                                        DBConn.query("insert into stock_"+inShop.getInt("id")+" values ("+sender.id+", 1);")
+                                }
+                                reply("很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin")-cost) + "个雨丝。……"+inShop.getString("comment"))
+                            } else
+                                reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
+                        }
+                    }
+                }
             }
-            else
-                reply("很高兴来这里买我的雨伞。不过……你现在还没有足够的雨丝呢？")
         }
 
-        (startsWith("阿雨")and contains("买")and contains("饼干")){
-            if(sender.id in raineyCoin && (raineyCoin[sender.id]!! >=15)){
-                raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(15)
-                if(sender.id in raineyBiscuit)
-                    raineyBiscuit[sender.id] = raineyCoin[sender.id]!!.plus(1)
-                else
-                    raineyBiscuit[sender.id] = 1
-                reply("很高兴来这里买我的饼干。你现在还有"+raineyCoin[sender.id]+"个雨丝。……这些是我亲手做的，虽然说我更擅长做汤面，但饼干似乎是可爱些。")
-            }
-            else
-                reply("很高兴来这里买我的饼干。不过……你现在还没有足够的雨丝呢？")
-        }
 
         (startsWith("阿雨") and contains("仓库")){
             var replys = "嗯，让我看看"+senderName+"仓库里有什么……\n"
             var anything = false;
-            if(sender.id in raineyUmbrella){
-                replys += ""+raineyUmbrella[sender.id]+"把雨伞\n"
-                anything = true
-            }
-            if(sender.id in raineyBiscuit){
-                replys += ""+raineyBiscuit[sender.id]+"盒饼干\n"
-                anything = true
+            val inShop = DBConn.query("select * from shop;")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    val tableI = DBConn.query("select * from stock_"+inShop.getInt("id")+" where costumer_id = "+sender.id+";")
+                    if(tableI!=null) {
+                        if (tableI.isBeforeFirst) {
+                            replys += inShop.getString("name") + "*"+tableI.getString("copies"+"；\n")
+                            anything = true
+                        }
+                    }
+                }
             }
             if(!anything)
                 replys += "啊，仓库里好像什么都没有的样子……\n"
             reply(replys)
         }
 
+
+        (startsWith("阿雨") and contains("上架")){
+            val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    val inShop = DBConn.query("select * from shop where name = "+m.groupValues[1]+";")
+                    if(inShop != null) {
+                        if(inShop.isBeforeFirst)
+                            reply("看样子商店里已经有"+m.groupValues[1]+"了呢。")
+                        else{
+                            DBConn.query("insert into shop (name, cost) values (\""+m.groupValues[1]+"\", "+m.groupValues[2]+", );")
+                            //还是不知道怎么获取chatgroup！
+                            val newId = DBConn.query("select max(id) from shop;")
+                            if(newId != null){
+                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" (-> customer_id integer primary key, copies integer, chatgroup integer);")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    /*不需要数据库的功能*/
         (startsWith("阿雨") and contains("随机")){
             val m = Regex(""".*随机.*?([0-9]+).*?([0-9]+).*""").find(message.contentToString())
             if (m != null) {
@@ -148,34 +178,6 @@ suspend fun main() {
                 }
             }
         }
-
-        (startsWith("阿雨") and contains("上架")){
-            val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
-            if (m != null) {
-                if(m.groupValues.isNotEmpty()){
-                    shopName = shopName.plus(m.groupValues[1])
-                    definedShop = definedShop.plus(mutableMapOf())
-                    shopCost = shopCost.plus(m.groupValues[2].toInt())
-                }
-            }
-        }
-
-        (startsWith("阿雨") and contains("买")){
-            for(i in shopName.indices) {
-                if(message.contentToString().contains(shopName[i])) {
-                    if (sender.id in raineyCoin && (raineyCoin[sender.id]!! >= shopCost[i])) {
-                        raineyCoin[sender.id] = raineyCoin[sender.id]!!.minus(shopCost[i])
-                        if (sender.id in definedShop[i])
-                            definedShop[i][sender.id] = definedShop[i][sender.id]!!.plus(1)
-                        else
-                            definedShop[i][sender.id] = 1
-                        reply("很高兴来这里买我的" + shopName[i] + "。你现在还有" + raineyCoin[sender.id] + "个雨丝。……欢迎你们来我这里寄放商品。")
-                    } else
-                        reply("很高兴来这里买我的" + shopName[i] + "。不过……你现在还没有足够的雨丝呢？")
-                }
-            }
-        }
-
 
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
