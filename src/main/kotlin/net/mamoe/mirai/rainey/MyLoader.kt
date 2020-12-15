@@ -271,8 +271,13 @@ suspend fun main() {
                 reply(s)
         }
 
-        (startsWith("∞¢”Í") and contains("…¨Õº")){
+        (startsWith("∞¢”Í") and (contains("…¨Õº") or contains("…´Õº"))){
             val picUrl = "W:/Store/setu.jpg"
+            reply(uploadImage(File(picUrl)))
+        }
+
+        (startsWith("∞¢”Í") and contains("ª∆Õº")){
+            val picUrl = "W:/Store/huangtu.jpg"
             reply(uploadImage(File(picUrl)))
         }
 
