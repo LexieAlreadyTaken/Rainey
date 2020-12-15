@@ -1,14 +1,9 @@
 package net.mamoe.mirai.rainey
 
-import io.ktor.http.URLBuilder
-import io.ktor.http.Url
-import kotlinx.io.core.Input
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.alsoLogin
-import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
-import net.mamoe.mirai.data.GroupHonorType
 import net.mamoe.mirai.event.events.MemberJoinEvent
 import net.mamoe.mirai.event.events.MemberLeaveEvent
 import net.mamoe.mirai.event.events.MemberNudgedEvent
@@ -16,15 +11,15 @@ import net.mamoe.mirai.event.events.MessageRecallEvent
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeMessages
 import net.mamoe.mirai.join
-import net.mamoe.mirai.message.GroupMessageEvent
-import net.mamoe.mirai.message.MessageEvent
-import net.mamoe.mirai.message.data.*
+import net.mamoe.mirai.message.data.At
+import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
-import net.mamoe.mirai.utils.FileCacheStrategy.MemoryCache.newImageCache
-import net.mamoe.mirai.utils.sendTo
+import java.io.BufferedReader
 import java.io.File
+import java.io.InputStreamReader
 import java.net.URL
+import java.net.URLConnection
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -279,6 +274,23 @@ suspend fun main() {
         (startsWith("∞¢”Í") and contains("ª∆Õº")){
             val picUrl = "W:/Store/huangtu.jpg"
             reply(uploadImage(File(picUrl)))
+        }
+
+        (startsWith("∞¢”Í") and contains("≤‚ ‘")){
+
+            val url = URL("http://image.baidu.com/i?tn=baiduimagejson&word=÷‹Ω‹¬◊&pn=10&rn=10&ie=utf8")
+
+
+            val conn: URLConnection = url.openConnection()
+
+
+            // ∂¡»°ƒ⁄»›
+            val isr = InputStreamReader(conn.getInputStream())
+            val br = BufferedReader(isr)
+            var line: String? = null
+            while (br.readLine().also { line = it } != null) {
+                println(line)
+            }
         }
 
         (contains("∞¢”Í") and contains("À≠")){
