@@ -277,7 +277,7 @@ suspend fun main() {
         }
 
         (startsWith("∞¢”Í") and contains("≤‚ ‘")){
-            val preurl = URL("http://image.baidu.com/i?tn=baiduimagejson&ct=201326592&cl=2&lm=-1&st=-1&fm=result&fr=&sf=1&fmq=1349413075627_R&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&word=girl&rn=2&pn=1")
+            val preurl = URL("https://acg.xydwz.cn/api/api.php")
             val preconn: URLConnection = preurl.openConnection()
             // ∂¡»°ƒ⁄»›
             val isr = InputStreamReader(preconn.getInputStream())
