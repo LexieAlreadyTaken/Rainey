@@ -17,7 +17,6 @@ import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
 import java.io.BufferedReader
 import java.io.File
-import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLConnection
@@ -278,21 +277,21 @@ suspend fun main() {
         }
 
         (startsWith("∞¢”Í") and contains("≤‚ ‘")){
-
-            val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
-
-
-            val conn: URLConnection = url.openConnection()
-
-
+            val preurl = URL("http://image.baidu.com/i?tn=baiduimagejson&ct=201326592&cl=2&lm=-1&st=-1&fm=result&fr=&sf=1&fmq=1349413075627_R&pv=&ic=0&nc=1&z=&se=1&showtab=0&fb=0&width=&height=&face=0&istype=2&word=girl&rn=2&pn=1")
+            val preconn: URLConnection = preurl.openConnection()
             // ∂¡»°ƒ⁄»›
-            conn.getInputStream().sendAsImage()
-
-            /*val br = BufferedReader(isr)
+            val isr = InputStreamReader(preconn.getInputStream())
+            val br = BufferedReader(isr)
             var line: String? = null
             while (br.readLine().also { line = it } != null) {
                 println(line)
-            }*/
+            }
+
+
+            /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
+            val conn: URLConnection = url.openConnection()
+            // ∂¡»°ƒ⁄»›
+            conn.getInputStream().sendAsImage()*/
         }
 
         (contains("∞¢”Í") and contains("À≠")){
