@@ -276,8 +276,8 @@ suspend fun main() {
             reply(uploadImage(File(picUrl)))
         }
 
-        (startsWith("°¢Óê") and contains("²âÊÔ")){
-            val preurl = URL("https://acg.xydwz.cn/api/api.php")
+        (startsWith("°¢Óê") and contains("¶¯Âş")){
+            val preurl = URL("https://api.dongmanxingkong.com/suijitupian/acg/1080p/index.php")
             val preconn: URLConnection = preurl.openConnection()
             // ¶ÁÈ¡ÄÚÈİ
             val iss = preconn.getInputStream()
