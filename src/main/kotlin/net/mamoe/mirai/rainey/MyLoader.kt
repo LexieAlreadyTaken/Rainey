@@ -277,7 +277,7 @@ suspend fun main() {
         }
 
         (startsWith("°¢Óê") and contains("¶¯Âþ")){
-            val preurl = URL("https://api.dongmanxingkong.com/suijitupian/acg/1080p/index.php")
+            val preurl = URL("https://acg.xydwz.cn/api/api.php")
             val preconn: URLConnection = preurl.openConnection()
             // ¶ÁÈ¡ÄÚÈÝ
             val iss = preconn.getInputStream()
