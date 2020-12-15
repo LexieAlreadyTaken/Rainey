@@ -17,6 +17,7 @@ import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
 import java.io.BufferedReader
 import java.io.File
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLConnection
@@ -278,19 +279,20 @@ suspend fun main() {
 
         (startsWith("∞¢”Í") and contains("≤‚ ‘")){
 
-            val url = URL("http://image.baidu.com/i?tn=baiduimagejson&word=÷‹Ω‹¬◊&pn=10&rn=10&ie=utf8")
+            val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
 
 
             val conn: URLConnection = url.openConnection()
 
 
             // ∂¡»°ƒ⁄»›
-            val isr = InputStreamReader(conn.getInputStream())
-            val br = BufferedReader(isr)
+            conn.getInputStream().sendAsImage()
+
+            /*val br = BufferedReader(isr)
             var line: String? = null
             while (br.readLine().also { line = it } != null) {
                 println(line)
-            }
+            }*/
         }
 
         (contains("∞¢”Í") and contains("À≠")){
