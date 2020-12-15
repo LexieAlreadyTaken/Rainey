@@ -2,8 +2,10 @@ package net.mamoe.mirai.rainey
 
 import net.mamoe.mirai.Bot
 import net.mamoe.mirai.alsoLogin
+import net.mamoe.mirai.contact.Contact
 import net.mamoe.mirai.contact.Member
 import net.mamoe.mirai.contact.nameCardOrNick
+import net.mamoe.mirai.data.GroupHonorType
 import net.mamoe.mirai.event.events.MemberJoinEvent
 import net.mamoe.mirai.event.events.MemberLeaveEvent
 import net.mamoe.mirai.event.events.MemberNudgedEvent
@@ -12,9 +14,17 @@ import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeMessages
 import net.mamoe.mirai.join
 import net.mamoe.mirai.message.data.At
+import net.mamoe.mirai.message.data.Image
 import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
+import net.mamoe.mirai.utils.ExternalImage
+import net.mamoe.mirai.utils.FileCacheStrategy.MemoryCache.newImageCache
+import net.mamoe.mirai.utils.sendImage
+import net.mamoe.mirai.utils.sendTo
+import java.io.InputStream
+import java.net.URL
+import java.nio.file.Paths
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalTime
@@ -260,6 +270,11 @@ suspend fun main() {
                 reply("太好了，目前为止还没有黑名单呢!")
             else
                 reply(s)
+        }
+
+        (startsWith("阿雨") and contains("涩图")){
+            val picUrl = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1608016017057&di=4401fabb6ec62f58b5e41cb7256f684d&imgtype=0&src=http%3A%2F%2Fimg3.imgtn.bdimg.com%2Fit%2Fu%3D2727400453%2C2619148111%26fm%3D214%26gp%3D0.jpg"
+            newImageCache(URL(picUrl)).sendTo(sender)
         }
 
         (contains("阿雨") and contains("谁")){
