@@ -276,24 +276,40 @@ suspend fun main() {
             reply(uploadImage(File(picUrl)))
         }
 
-        (startsWith("°¢Óê") and contains("¶¯Âþ")){
-            val preurl = URL("https://acg.xydwz.cn/api/api.php")
+        (startsWith("°¢Óê") and contains("PÕ¾")){
+            val preurl = URL("https://acg.xydwz.cn/PÕ¾/PÕ¾Ëæ»úÍ¼Æ¬.php")
             val preconn: URLConnection = preurl.openConnection()
             // ¶ÁÈ¡ÄÚÈÝ
             val iss = preconn.getInputStream()
             iss.sendAsImage()
-            /*val isr = InputStreamReader(iss)
-            val br = BufferedReader(isr)
-            var line: String? = null
-            while (br.readLine().also { line = it } != null) {
-                println(line)
-            }*/
+        }
 
 
-            /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
-            val conn: URLConnection = url.openConnection()
-            // ¶ÁÈ¡ÄÚÈÝ
-            conn.getInputStream().sendAsImage()*/
+        (startsWith("°¢Óê") and contains("²âÊÔ")){
+
+            val m = Regex(""".*?¡°(.+)¡±.*?""").find(message.contentToString())
+            if (m != null) {
+                if (m.groupValues.isNotEmpty()) {
+                    val preurl = URL("https://app-api.pixiv.net/v1/search/illust?filter=for_android&word=" +m.groupValues[1]+ "&sort=date_desc&search_target=partial_match_for_tags")
+                    val preconn: URLConnection = preurl.openConnection()
+                    // ¶ÁÈ¡ÄÚÈÝ
+                    val iss = preconn.getInputStream()
+                    iss.sendAsImage()
+
+                    val isr = InputStreamReader(iss)
+                    val br = BufferedReader(isr)
+                    var line: String? = null
+                    while (br.readLine().also { line = it } != null) {
+                        println(line)
+                    }
+
+
+                    /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
+                    val conn: URLConnection = url.openConnection()
+                    // ¶ÁÈ¡ÄÚÈÝ
+                    conn.getInputStream().sendAsImage()*/
+                }
+            }
         }
 
         (contains("°¢Óê") and contains("Ë­")){
