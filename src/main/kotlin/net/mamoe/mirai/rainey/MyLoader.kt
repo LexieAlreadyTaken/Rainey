@@ -280,12 +280,14 @@ suspend fun main() {
             val preurl = URL("https://acg.xydwz.cn/api/api.php")
             val preconn: URLConnection = preurl.openConnection()
             // ¶ÁÈ¡ÄÚÈÝ
-            val isr = InputStreamReader(preconn.getInputStream())
+            val iss = preconn.getInputStream()
+            iss.sendAsImage()
+            /*val isr = InputStreamReader(iss)
             val br = BufferedReader(isr)
             var line: String? = null
             while (br.readLine().also { line = it } != null) {
                 println(line)
-            }
+            }*/
 
 
             /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
