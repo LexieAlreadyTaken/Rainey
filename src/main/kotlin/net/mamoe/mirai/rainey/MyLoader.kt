@@ -11,8 +11,10 @@ import net.mamoe.mirai.event.events.MessageRecallEvent
 import net.mamoe.mirai.event.subscribeAlways
 import net.mamoe.mirai.event.subscribeMessages
 import net.mamoe.mirai.join
+import net.mamoe.mirai.message.GroupMessageEvent
 import net.mamoe.mirai.message.data.At
 import net.mamoe.mirai.message.data.PlainText
+import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
 import java.io.BufferedReader
@@ -347,6 +349,7 @@ suspend fun main() {
                 |6——商店：默认的货物有雨伞和饼干。也可以上架和下架自己的货物。
                 |7——上架：召唤阿雨，说出“上架”，把要上架的货物名写在双引号里，然后写上价格。
                 |8——下架：召唤阿雨，说出“下架”，把要下架的货物名写在双引号里。
+                |9——搜图：召唤阿雨，说出“动漫”，即可返回一张随机动漫图片。目前不支持关键词搜索。
             """.trimMargin())
         }
     }
@@ -373,6 +376,11 @@ suspend fun main() {
                 if(Instant.now().toEpochMilli() - jointime.time < 1000*60*60*24)
                     DBConn.query("insert into blocklist values ("+member.id+");")
             }
+        }
+    }
+    miraiBot.subscribeAlways<GroupMessageEvent>{
+        if(message.first().content=="阿雨，哪里"){
+            reply(""+group.id)
         }
     }
 
