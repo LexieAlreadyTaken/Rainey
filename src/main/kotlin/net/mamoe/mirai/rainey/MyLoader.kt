@@ -286,6 +286,7 @@ suspend fun main() {
             reply(uploadImage(File(picUrl)))
         }
 
+
         (startsWith("阿雨") and contains("动漫")){
             val preurl = URL("https://acg.xydwz.cn/api/api.php")
             val preconn: URLConnection = preurl.openConnection()
@@ -293,6 +294,7 @@ suspend fun main() {
             val iss = preconn.getInputStream()
             iss.sendAsImage()
         }
+
 
         /*
            (startsWith("阿雨") and contains("P站")){
@@ -302,8 +304,6 @@ suspend fun main() {
             val iss = preconn.getInputStream()
             iss.sendAsImage()
         }
-
-
         (startsWith("阿雨") and contains("测试")){
 
             val m = Regex(""".*?“(.+)”.*?""").find(message.contentToString())
@@ -330,7 +330,7 @@ suspend fun main() {
                 }
             }
         }
-        * */
+        */
 
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
