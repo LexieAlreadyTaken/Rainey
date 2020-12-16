@@ -142,7 +142,7 @@ suspend fun main() {
                         if(coinNum!=null) {
                             if (coinNum.isBeforeFirst) {
                                 coinNum.next()
-                                if(coinNum.getInt("coin")>inShop.getInt("cost")) {
+                                if(coinNum.getInt("coin")>cost) {
                                     DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
                                     val senderInShop =
                                         DBConn.query("select * from stock_" + inShop.getInt("id") + ";")
@@ -187,6 +187,16 @@ suspend fun main() {
             reply(replys)
         }
 
+        (startsWith("阿雨") and contains("商店")){
+            var replys = "很高兴来到我的商店，现在让我介绍一下吧……\n"
+            val inShop = DBConn.query("select * from shop;")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    replys+="【"+inShop.getString("name")+"】，每份"+inShop.getString("cost")+"雨丝；\n"
+                }
+            }
+            reply(replys)
+        }
 
         (startsWith("阿雨") and contains("上架")){
             val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
@@ -282,19 +292,45 @@ suspend fun main() {
             // 读取内容
             val iss = preconn.getInputStream()
             iss.sendAsImage()
-            /*val isr = InputStreamReader(iss)
-            val br = BufferedReader(isr)
-            var line: String? = null
-            while (br.readLine().also { line = it } != null) {
-                println(line)
-            }*/
-
-
-            /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
-            val conn: URLConnection = url.openConnection()
-            // 读取内容
-            conn.getInputStream().sendAsImage()*/
         }
+
+        /*
+           (startsWith("阿雨") and contains("P站")){
+            val preurl = URL("https://acg.xydwz.cn/P站/P站随机图片.php")
+            val preconn: URLConnection = preurl.openConnection()
+            // 读取内容
+            val iss = preconn.getInputStream()
+            iss.sendAsImage()
+        }
+
+
+        (startsWith("阿雨") and contains("测试")){
+
+            val m = Regex(""".*?“(.+)”.*?""").find(message.contentToString())
+            if (m != null) {
+                if (m.groupValues.isNotEmpty()) {
+                    val preurl = URL("https://app-api.pixiv.net/v1/search/illust?filter=for_android&word=" +m.groupValues[1]+ "&sort=date_desc&search_target=partial_match_for_tags")
+                    val preconn: URLConnection = preurl.openConnection()
+                    // 读取内容
+                    val iss = preconn.getInputStream()
+                    iss.sendAsImage()
+
+                    val isr = InputStreamReader(iss)
+                    val br = BufferedReader(isr)
+                    var line: String? = null
+                    while (br.readLine().also { line = it } != null) {
+                        println(line)
+                    }
+
+
+                    /*val url = URL("https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3618594892,1072052365&fm=26&gp=0.jpg")
+                    val conn: URLConnection = url.openConnection()
+                    // 读取内容
+                    conn.getInputStream().sendAsImage()*/
+                }
+            }
+        }
+        * */
 
         (contains("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
