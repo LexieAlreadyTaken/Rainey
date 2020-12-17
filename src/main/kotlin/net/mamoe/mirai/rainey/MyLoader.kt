@@ -297,6 +297,10 @@ suspend fun main() {
             iss.sendAsImage()
         }
 
+        (startsWith("°¢Óê") and contains("Éú³É")){
+            reply(ocGen())
+        }
+
 
         /*
            (startsWith("°¢Óê") and contains("PÕ¾")){
@@ -379,7 +383,7 @@ suspend fun main() {
         }
     }
     miraiBot.subscribeAlways<GroupMessageEvent>{
-        if(message.first().content=="°¢Óê£¬ÄÄÀï"){
+        if(message.content=="°¢Óê£¬ÄÄÀï"){
             reply(""+group.id)
         }
     }
