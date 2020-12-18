@@ -112,14 +112,26 @@ suspend fun main() {
 
         /*商店有关的操作*/
         (startsWith("阿雨") and contains("签到")){
-            val randNum = (1..20).random()
-            reply("谢谢你来看我。这里的"+randNum+"个雨丝你可以拿走了……")
-            val queryRes = DBConn.query("select coin from customer where id = "+sender.id+";")
+            val queryRes = DBConn.query("select * from customer where id = "+sender.id+";")
             if(queryRes!=null) {
-                if (queryRes.isBeforeFirst)
-                    DBConn.query("update customer set coin = coin+ $randNum where id = " + sender.id + ";")
-                else
-                    DBConn.query("insert into customer values ("+sender.id+", "+randNum+");")
+                val randNum = (1..20).random()
+                if (queryRes.isBeforeFirst) {
+                    if(!queryRes.getBoolean("signed_in")) {
+                        DBConn.query("update customer set coin = coin+ $randNum,sign_in = sign_in + 1, signed_in = true where id = " + sender.id + ";")
+                        when(queryRes.getInt("sign_in")){
+                            0 -> reply("谢谢你来看我。这里的" + randNum + "个雨丝你可以拿走了……")
+                            in 1..3 -> reply("谢谢你今天也来看我。这里的" + randNum + "个雨丝你可以拿走了……")
+                            in 4..7 -> reply("很高兴今天也能见到你。这里的" + randNum + "个雨丝你可以拿走了……")
+                            else -> reply(sender.nameCardOrNick+"，还说什么？拿你的"+randNum+"雨丝就是了！（少年气的笑）")
+                        }
+                    }
+                    else
+                        reply("谢谢你来看我。很高兴一天之中能再次见到你。")
+                }
+                else {
+                    reply("生面孔？（赶紧掩饰自己的羞涩）……非常高兴能交到更多的朋友。这里的" + randNum + "个雨丝你可以拿走了……")
+                    DBConn.query("insert into customer values (" + sender.id + ", " + randNum + ",1,true);")
+                }
             }
         }
 
@@ -297,13 +309,6 @@ suspend fun main() {
             val iss = preconn.getInputStream()
             iss.sendAsImage()
         }
-        (startsWith("阿雨") and contains("P站")){
-            val preurl = URL("https://acg.xydwz.cn/P"+ URLEncoder.encode("站")+"/P"+URLEncoder.encode("站随机图片")+".php")
-            val preconn: URLConnection = preurl.openConnection()
-            // 读取内容
-            val iss = preconn.getInputStream()
-            iss.sendAsImage()
-        }
 
         (startsWith("阿雨") and contains("生成")){
             reply(ocGen())
@@ -311,8 +316,8 @@ suspend fun main() {
 
 
         /*
-           (startsWith("阿雨") and contains("P站")){
-            val preurl = URL("https://acg.xydwz.cn/P站/P站随机图片.php")
+            (startsWith("阿雨") and contains("P站")){
+            val preurl = URL("https://acg.xydwz.cn/P"+ URLEncoder.encode("站")+"/P"+URLEncoder.encode("站随机图片")+".php")
             val preconn: URLConnection = preurl.openConnection()
             // 读取内容
             val iss = preconn.getInputStream()
@@ -346,11 +351,11 @@ suspend fun main() {
         }
         */
 
-        (contains("阿雨") and contains("谁")){
+        (startsWith("阿雨") and contains("谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
         }
 
-        (contains("阿雨") and contains("帮助")){
+        (startsWith("阿雨") and contains("帮助")){
             reply("""阿雨功能说明书（2020年12月14日）
                 |0——几乎所有功能都需要在句子的开头召唤阿雨。除了撤回和自动复读。
                 |1——复读：可以通过“开始复读”和“停止复读”切换阿雨的复读机状态。
