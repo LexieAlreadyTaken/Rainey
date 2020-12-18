@@ -22,6 +22,7 @@ import java.io.File
 import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLConnection
+import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
@@ -291,6 +292,13 @@ suspend fun main() {
 
         (startsWith("°¢Óê") and contains("¶¯Âþ")){
             val preurl = URL("https://acg.xydwz.cn/api/api.php")
+            val preconn: URLConnection = preurl.openConnection()
+            // ¶ÁÈ¡ÄÚÈÝ
+            val iss = preconn.getInputStream()
+            iss.sendAsImage()
+        }
+        (startsWith("°¢Óê") and contains("PÕ¾")){
+            val preurl = URL("https://acg.xydwz.cn/P"+ URLEncoder.encode("Õ¾")+"/P"+URLEncoder.encode("Õ¾Ëæ»úÍ¼Æ¬")+".php")
             val preconn: URLConnection = preurl.openConnection()
             // ¶ÁÈ¡ÄÚÈÝ
             val iss = preconn.getInputStream()
