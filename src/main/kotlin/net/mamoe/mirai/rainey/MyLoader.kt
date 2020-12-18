@@ -244,6 +244,13 @@ suspend fun main() {
             reply(ocGen())
         }
 
+        (startsWith("°¢Óê") and contains("ĞÕÃû")){
+            var res = randomGen("Y:data\\first_name.txt")+randomGen("Y:data\\last_name.txt")
+            if(Math.random()>0.3)
+                res+=randomGen("Y:data\\last_name.txt")
+            reply(res)
+        }
+
 
         /*
             (startsWith("°¢Óê") and contains("PÕ¾")){
