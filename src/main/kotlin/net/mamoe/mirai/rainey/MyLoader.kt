@@ -351,7 +351,7 @@ suspend fun main() {
                                                     + inShop.getInt("id") +"and c_id ="+sender.id+ ";")
                                         else
                                             DBConn.query("insert into stock values ("+ inShop.getInt("id") +","
-                                                    + sender.id + ", 1,0);")
+                                                    + sender.id + ", 1);")
                                         DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
                                         reply(
                                                 "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
