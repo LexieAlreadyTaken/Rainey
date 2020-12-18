@@ -164,117 +164,6 @@ suspend fun main() {
             }
         }
 
-        (startsWith("阿雨") and contains("买")){
-            val inShop = DBConn.query("select * from shop;")
-            if(inShop != null) {
-                while(inShop.next()) {
-                    if (message.contentToString().contains(inShop.getString("name"))) {
-                        val cost = inShop.getInt("cost")
-                        val coinNum = DBConn.query("select coin from customer where id = "+sender.id+";")
-                        if(coinNum!=null) {
-                            if (coinNum.isBeforeFirst) {
-                                coinNum.next()
-                                if(coinNum.getInt("coin")>cost) {
-                                    DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
-                                    val senderInShop =
-                                        DBConn.query("select * from stock_" + inShop.getInt("id") + ";")
-                                    if (senderInShop != null) {
-                                        if (senderInShop.isBeforeFirst)
-                                            DBConn.query("update stock_" + inShop.getInt("id") + " set copies = copies + 1;")
-                                        else
-                                            DBConn.query("insert into stock_" + inShop.getInt("id") + " values (" + sender.id + ", 1,0);")
-                                    }
-                                    reply(
-                                        "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
-                                                (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
-                                    )
-                                }
-                                else
-                                    reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        (startsWith("阿雨") and contains("仓库")){
-            var replys = "嗯，让我看看"+senderName+"仓库里有什么……\n"
-            var anything = false;
-            val inShop = DBConn.query("select * from shop;")
-            if(inShop != null) {
-                while(inShop.next()) {
-                    val tableI = DBConn.query("select * from stock_"+inShop.getInt("id")+" where customer_id = "+sender.id+";")
-                    if(tableI!=null) {
-                        if (tableI.isBeforeFirst) {
-                            tableI.next()
-                            replys += inShop.getString("name") + "*"+tableI.getString("copies")+"\n"
-                            anything = true
-                        }
-                    }
-                }
-            }
-            if(!anything)
-                replys += "啊，仓库里好像什么都没有的样子……\n"
-            reply(replys)
-        }
-
-        (startsWith("阿雨") and contains("商店")){
-            var replys = "很高兴来到我的商店，现在让我介绍一下吧……\n"
-            val inShop = DBConn.query("select * from shop;")
-            if(inShop != null) {
-                while(inShop.next()) {
-                    replys+="【"+inShop.getString("name")+"】，每份"+inShop.getString("cost")+"雨丝；\n"
-                }
-            }
-            reply(replys)
-        }
-
-        (startsWith("阿雨") and contains("上架")){
-            val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
-            if (m != null) {
-                if(m.groupValues.isNotEmpty()){
-                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
-                    if(inShop != null) {
-                        if(inShop.isBeforeFirst)
-                            reply("看样子商店里已经有"+m.groupValues[1]+"了呢。")
-                        else{
-                            DBConn.query("insert into shop (name, cost) values (\""+m.groupValues[1]+"\", "+m.groupValues[2]+");")
-                            //还是不知道怎么获取chatgroup！
-                            val newId = DBConn.query("select max(id) from shop;")
-                            if(newId != null){
-                                newId.next()
-                                DBConn.query( "create table stock_"+newId.getInt("max(id)")+" ( customer_id bigint primary key, copies integer, chatgroup integer);")
-                                reply("已经上架“"+m.groupValues[1]+"”，每份的价格是"+m.groupValues[2]+"雨丝。")
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        (startsWith("阿雨") and contains("下架")){
-            val m = Regex(""".*下架.*?“(.+)”.*?""").find(message.contentToString())
-            if (m != null) {
-                if(m.groupValues.isNotEmpty()){
-                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
-                    if(inShop != null) {
-                        if(inShop.isBeforeFirst) {
-                            DBConn.query("delete from shop where name = \""+m.groupValues[1]+"\";")
-                            val newId = DBConn.query("select max(id) from shop;")
-                            if(newId != null){
-                                newId.next()
-                                DBConn.query( "drop table stock_"+newId.getInt("max(id)")+";")
-                                reply("已经下架“"+m.groupValues[1]+"”，希望你接下来的生活也愉快。")
-                            }
-                        }
-                        else{
-                            reply("看起来商店里还没有"+m.groupValues[1]+"哦？")
-                        }
-                    }
-                }
-            }
-        }
 
 
 
@@ -368,8 +257,16 @@ suspend fun main() {
         }
         */
 
-        (startsWith("阿雨") and contains("谁")){
+        (startsWith("阿雨") and contains("你是谁")){
             reply("阿雨是小河开发的群机器人，是来自小河宇宙的江南，有着烟灰色马尾辫的男孩子。目前我的功能还很少，不过我会尽量成长的。")
+        }
+
+        (startsWith("阿雨") and contains("妈妈是谁")){
+            reply("阿雨的麻麻（创造者）是小河，一个没什么本事的程序员，业余喜欢写文和在代码上修修补补。")
+        }
+
+        (startsWith("阿雨") and contains("爸爸是谁")){
+            reply("阿雨的爸爸也是小河，一个没什么本事的程序员……你以为还能是谁啊（摔）")
         }
 
         (startsWith("阿雨") and contains("帮助")){
@@ -415,6 +312,117 @@ suspend fun main() {
     miraiBot.subscribeAlways<GroupMessageEvent>{
         if(message.content=="阿雨，哪里"){
             reply(""+group.id)
+        }
+        if(message.content.startsWith("阿雨") and message.content.contains("上架")){
+            val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
+                    if(inShop != null) {
+                        if(inShop.isBeforeFirst)
+                            reply("看样子商店里已经有"+m.groupValues[1]+"了呢。")
+                        else{
+                            DBConn.query("insert into shop (name, cost, chatgroup, friendliness) values (\""
+                                    +m.groupValues[1]+"\", "+m.groupValues[2]+","
+                                    +group.id+","+(1..20).random().toString()+");")
+                            reply("已经上架“"+m.groupValues[1]+"”，每份的价格是"+m.groupValues[2]+"雨丝。")
+                        }
+                    }
+                }
+            }
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("买")){
+            val inShop = DBConn.query("select * from shop where chatgroup = 0 or chatgroup = "+group.id+";")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    if (message.contentToString().contains(inShop.getString("name"))) {
+                        val cost = inShop.getInt("cost")
+                        val coinNum = DBConn.query("select coin from customer where id = "+sender.id+";")
+                        if(coinNum!=null) {
+                            if (coinNum.isBeforeFirst) {
+                                coinNum.next()
+                                if(coinNum.getInt("coin")>cost) {
+                                    DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
+                                    val senderInShop =
+                                            DBConn.query("select * from stock where s_id =" + inShop.getInt("id")
+                                                    +"and c_id ="+sender.id+ ";")
+                                    if (senderInShop != null) {
+                                        if (senderInShop.isBeforeFirst)
+                                            DBConn.query("update stock set copies = copies + 1 where s_id ="
+                                                    + inShop.getInt("id") +"and c_id ="+sender.id+ ";")
+                                        else
+                                            DBConn.query("insert into stock values ("+ inShop.getInt("id") +","
+                                                    + sender.id + ", 1,0);")
+                                    }
+                                    reply(
+                                            "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
+                                                    (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
+                                    )
+                                }
+                                else
+                                    reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("仓库")){
+            var replys = "嗯，让我看看"+senderName+"仓库里有什么……\n"
+            var anything = false;
+            val inShop = DBConn.query("select * from shop;")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    val tableI = DBConn.query("select * from stock where c_id = "+sender.id
+                            +" and s_id ="+inShop.getString("id")+";")
+                    if(tableI!=null) {
+                        if (tableI.isBeforeFirst) {
+                            tableI.next()
+                            replys += inShop.getString("name") + "*"+tableI.getString("copies")+"\n"
+                            anything = true
+                        }
+                    }
+                }
+            }
+            if(!anything)
+                replys += "啊，仓库里好像什么都没有的样子……\n"
+            reply(replys)
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("商店")){
+            var replys = "很高兴来到我的商店，现在让我介绍一下吧……\n"
+            val inShop = DBConn.query("select * from shop;")
+            if(inShop != null) {
+                while(inShop.next()) {
+                    replys+="【"+inShop.getString("name")+"】，每份"+inShop.getString("cost")+"雨丝；\n"
+                }
+            }
+            reply(replys)
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("下架")){
+            val m = Regex(""".*下架.*?“(.+)”.*?""").find(message.contentToString())
+            if (m != null) {
+                if(m.groupValues.isNotEmpty()){
+                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\";")
+                    if(inShop != null) {
+                        if(inShop.isBeforeFirst) {
+                            DBConn.query("delete from shop where name = \""+m.groupValues[1]+"\";")
+                            val newId = DBConn.query("select max(id) from shop;")
+                            if(newId != null){
+                                newId.next()
+                                DBConn.query( "delete from stock where name = \""+m.groupValues[1]+"\";")
+                                reply("已经下架“"+m.groupValues[1]+"”，希望你接下来的生活也愉快。")
+                            }
+                        }
+                        else{
+                            reply("看起来商店里还没有"+m.groupValues[1]+"哦？")
+                        }
+                    }
+                }
+            }
         }
     }
 
