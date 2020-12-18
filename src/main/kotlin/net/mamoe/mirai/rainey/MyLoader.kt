@@ -103,6 +103,9 @@ suspend fun main() {
         (startsWith("阿雨") and contains("喜欢")){
             reply("喜欢我吗？……我以为我的性格太冷清了……不过，也许这样，也不错。")
         }
+        (startsWith("阿雨") and contains("suki")){
+            reply("Sukideyo……是这样说的吗？麻麻没有教我很多日语。")
+        }
         (startsWith("阿雨") and contains("胖次")){
             reply("（脸迅速地飞红，转过身去）啊啊啊啊啊！变态啊！")
         }
@@ -418,6 +421,40 @@ suspend fun main() {
                         }
                         else{
                             reply("看起来商店里还没有"+m.groupValues[1]+"哦？")
+                        }
+                    }
+                }
+            }
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("送")){
+            var replies = "谢谢！阿雨会好好地珍藏或享用的……\n"
+            val inStock = DBConn.query("select * from stock where c_id = "+sender.id+";")
+            if(inStock != null) {
+                while(inStock.next()) {
+                    val shopList = DBConn.query("select * from shop where id ="
+                            +inStock.getString("s_id")+";")
+                    if(shopList == null)
+                        continue
+                    else
+                        shopList.next()
+                    if (message.contentToString().contains(shopList.getString("name"))) {
+                        val f_increase = shopList.getInt("friendliness")
+                        val f_old = DBConn.query("select friendliness from customer where id = "+sender.id+";")
+                        if(f_old!=null) {
+                            if (f_old.isBeforeFirst) {
+                                f_old.next()
+                                DBConn.query("update customer set friendliness = friendliness + "
+                                    +f_increase+";")
+                                when(f_old.getInt("friendliness") + f_increase){
+                                    0 -> replies += "不过……真的是要送给阿雨吗？您确定？感觉阿雨肩膀上的责任又多了几分……"
+                                    in 1..10 -> replies += "不过说实在的，阿雨诚惶诚恐，不明白为什么要送来这么贵重的礼物……"
+                                    in 10..30 -> replies += "非常高兴收到了这份礼物！说真的，阿雨明天一定会比今天更开心地起床！"
+                                    in 30..100 -> replies += senderName + "太棒了……"
+                                    else -> replies += "（阿雨轻轻将你搂在了怀里，幸福地微笑着）"
+                                }
+                                reply(replies)
+                            }
                         }
                     }
                 }
