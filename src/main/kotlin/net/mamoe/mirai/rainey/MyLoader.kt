@@ -112,10 +112,15 @@ suspend fun main() {
 
         /*商店有关的操作*/
         (startsWith("阿雨") and contains("签到")){
+            reply("阿雨的签到功能已经被麻麻改成了更加人性化的问候功能。只需要召唤阿雨并说出”你好“就可以对阿雨进行问候。")
+        }
+
+        (startsWith("阿雨") and contains("你好")){
             val queryRes = DBConn.query("select * from customer where id = "+sender.id+";")
             if(queryRes!=null) {
                 val randNum = (1..20).random()
                 if (queryRes.isBeforeFirst) {
+                    queryRes.next()
                     if(!queryRes.getBoolean("signed_in")) {
                         DBConn.query("update customer set coin = coin+ $randNum,sign_in = sign_in + 1, signed_in = true where id = " + sender.id + ";")
                         when(queryRes.getInt("sign_in")){
@@ -132,6 +137,18 @@ suspend fun main() {
                     reply("生面孔？（赶紧掩饰自己的羞涩）……非常高兴能交到更多的朋友。这里的" + randNum + "个雨丝你可以拿走了……")
                     DBConn.query("insert into customer values (" + sender.id + ", " + randNum + ",1,true);")
                 }
+            }
+        }
+
+        (startsWith("阿雨") and contains("连续")){
+            val queryRes = DBConn.query("select * from customer where id = "+sender.id+";")
+            if(queryRes!=null){
+                if(queryRes.isBeforeFirst){
+                    queryRes.next()
+                    reply("你已经连续来看我"+queryRes.getInt("sign_in")+"天了！希望我们的友谊可以一直下去。")
+                }
+                else
+                    reply("啊，对不起……可以麻烦介绍一下自己吗？阿雨好像不记得你。")
             }
         }
 
