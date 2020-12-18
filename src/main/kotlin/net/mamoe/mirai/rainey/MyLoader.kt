@@ -342,11 +342,9 @@ suspend fun main() {
                         if(coinNum!=null) {
                             if (coinNum.isBeforeFirst) {
                                 coinNum.next()
-                                if(coinNum.getInt("coin")>cost) {
-                                    DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
-                                    val senderInShop =
+                                if(coinNum.getInt("coin")>cost) {                                    val senderInShop =
                                             DBConn.query("select * from stock where s_id =" + inShop.getInt("id")
-                                                    +"and c_id ="+sender.id+ ";")
+                                                    +" and c_id ="+sender.id+ ";")
                                     if (senderInShop != null) {
                                         if (senderInShop.isBeforeFirst)
                                             DBConn.query("update stock set copies = copies + 1 where s_id ="
@@ -354,11 +352,12 @@ suspend fun main() {
                                         else
                                             DBConn.query("insert into stock values ("+ inShop.getInt("id") +","
                                                     + sender.id + ", 1,0);")
+                                        DBConn.query("update customer set coin = coin - $cost where id = " + sender.id + ";")
+                                        reply(
+                                                "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
+                                                        (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
+                                        )
                                     }
-                                    reply(
-                                            "很高兴来这里买我的" + inShop.getString("name") + "。你现在还有" + (coinNum.getInt("coin") - cost) + "个雨丝。……" +
-                                                    (inShop.getString("comment")?:"欢迎你们在我这里寄放货物。")
-                                    )
                                 }
                                 else
                                     reply("很高兴来这里买我的" + inShop.getString("name") + "。不过……你现在还没有足够的雨丝呢？")
