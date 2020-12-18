@@ -379,7 +379,7 @@ suspend fun main() {
                                     if (senderInShop != null) {
                                         if (senderInShop.isBeforeFirst)
                                             DBConn.query("update stock set copies = copies + 1 where s_id ="
-                                                    + inShop.getInt("id") +"and c_id ="+sender.id+ ";")
+                                                    + inShop.getInt("id") +" and c_id ="+sender.id+ ";")
                                         else
                                             DBConn.query("insert into stock values ("+ inShop.getInt("id") +","
                                                     + sender.id + ", 1);")
@@ -462,7 +462,7 @@ suspend fun main() {
                 while(inStock.next()) {
                     val shopList = DBConn.query("select * from shop where id ="
                             +inStock.getString("s_id")+";")
-                    if(shopList == null)
+                    if(shopList == null || shopList.isBeforeFirst)
                         continue
                     else
                         shopList.next()
