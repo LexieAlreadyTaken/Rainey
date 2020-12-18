@@ -5,7 +5,7 @@ import kotlin.math.sqrt
 
 suspend fun ocGen() :String{
    var res = "根据阿雨分析，你的理想OC大约是这个样子……\n"
-   res += "身高："+normalRandom(164.0,36.0).toInt()+"cm\n"
+   res += "身高："+normalRandom(168.0,36.0).toInt()+"cm\n"
    res += "性别："+genderGen()+"\n"
    res += "发色："+colorGen()+"发\n"
    res += "瞳色："+colorGen()+"瞳\n"
@@ -13,7 +13,7 @@ suspend fun ocGen() :String{
    res += "，并且有着"+randomGen("Y:data\\hairstyle_back.txt")+"作为特征\n"
    res += "属性："+randomGen("Y:data\\characteristics_outer.txt")
    res += "，但实际上"+randomGen("Y:data\\characteristics_inner.txt")+"\n"
-   res += "除此之外，她还是一名骄傲的"+randomGen("Y:data\\occupation.txt")+"\n"
+   res += "除此之外，TA还是一名骄傲的"+randomGen("Y:data\\occupation.txt")+"\n"
    res += "喜欢阿雨的分析吗？如果不够满意，可以再来一遍（）"
    return res
 }
