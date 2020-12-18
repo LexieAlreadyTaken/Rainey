@@ -393,7 +393,7 @@ suspend fun main() {
 
         if(message.content.startsWith("阿雨") and message.content.contains("商店")){
             var replys = "很高兴来到我的商店，现在让我介绍一下吧……\n"
-            val inShop = DBConn.query("select * from shop where chatgroup ="+group.id+";")
+            val inShop = DBConn.query("select * from shop where chatgroup ="+group.id+" or chatgroup = 0;")
             if(inShop != null) {
                 while(inShop.next()) {
                     replys+="【"+inShop.getString("name")+"】，每份"+inShop.getString("cost")+"雨丝；\n"
@@ -406,7 +406,7 @@ suspend fun main() {
             val m = Regex(""".*下架.*?“(.+)”.*?""").find(message.contentToString())
             if (m != null) {
                 if(m.groupValues.isNotEmpty()){
-                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\" and chatgroup = "+group.id+";")
+                    val inShop = DBConn.query("select * from shop where name = \""+m.groupValues[1]+"\" and (chatgroup = "+group.id+" or chatgroup = 0);")
                     if(inShop != null) {
                         if(inShop.isBeforeFirst) {
                             DBConn.query("delete from shop where name = \""+m.groupValues[1]+"\";")
