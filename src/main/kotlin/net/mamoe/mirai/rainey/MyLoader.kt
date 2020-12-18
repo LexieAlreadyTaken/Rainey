@@ -94,6 +94,9 @@ suspend fun main() {
             reply("是我。怎么了……")
         }
 
+        (startsWith("阿雨") and contains("贴贴")){
+            reply(senderName+"贴贴……呃，“贴贴“是这么用的吧？")
+        }
         (startsWith("阿雨") and contains("抱")){
             reply("（迟疑了一下，然后给了你一个小心翼翼的拥抱）这样……可以了吗？")
         }
@@ -103,11 +106,29 @@ suspend fun main() {
         (startsWith("阿雨") and contains("喜欢")){
             reply("喜欢我吗？……我以为我的性格太冷清了……不过，也许这样，也不错。")
         }
+        (startsWith("阿雨") and contains("爱")){
+            reply("（低着头）……也许有一天，我会成为你理想中的模样。")
+        }
         (startsWith("阿雨") and contains("suki")){
             reply("Sukideyo……是这样说的吗？麻麻没有教我很多日语。")
         }
         (startsWith("阿雨") and contains("胖次")){
             reply("（脸迅速地飞红，转过身去）啊啊啊啊啊！变态啊！")
+        }
+        (startsWith("阿雨") and contains("欧派")){
+            reply("为什么这样对我……就因为阿雨没有吗？")
+        }
+        (startsWith("阿雨") and contains("女")){
+            reply("阿雨是男孩子……虽然，如果把我当成女孩子来对待也不会很生气就是了。")
+        }
+        (startsWith("阿雨") and contains("男")){
+            reply("阿雨并不认为自己是非常优秀的男孩子……（抬头望着你）你呢？")
+        }
+        (startsWith("阿雨") and contains("搞基")){
+            reply("不好意思，阿雨是知道这个词什么意思的。……很抱歉让你失望了。")
+        }
+        (startsWith("阿雨") and contains("结婚")){
+            reply("不同意。（棒读）")
         }
 
 
@@ -458,6 +479,24 @@ suspend fun main() {
                         }
                     }
                 }
+            }
+        }
+
+        if(message.content.startsWith("阿雨") and message.content.contains("友情")) {
+            val fPoints = DBConn.query("select friendliness from customer where id = "+sender.id+";")
+            if(fPoints!=null){
+                if(fPoints.isBeforeFirst) {
+                    fPoints.next()
+                    when (fPoints.getInt("friendliness")) {
+                        0 -> reply("友情这样的事情……怎么突然想起来找我谈论了。（眼神朦胧）")
+                        in 1..10 -> reply("啊，友情这回事……我觉得还好吧，毕竟每个和我成为朋友的人，都说我有一颗善良的心呢。")
+                        in 10..30 -> reply("或许有点突兀，不过我觉得我们之间……已经不单是仅仅的熟人了。")
+                        in 30..100 -> reply("在我面前还这么拘谨做什么？没必要提防我的反应——我们是朋友嘛。")
+                        else -> reply("当然啦。随时都在想着彼此所想的，好朋友。")
+                    }
+                }
+                else
+                    reply("友情这样的事情……怎么突然想起来找我谈论了。（眼神朦胧）")
             }
         }
     }
