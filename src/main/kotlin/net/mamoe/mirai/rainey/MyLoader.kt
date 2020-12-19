@@ -159,7 +159,7 @@ suspend fun main() {
                 }
                 else {
                     reply("生面孔？（赶紧掩饰自己的羞涩）……非常高兴能交到更多的朋友。这里的" + randNum + "个雨丝你可以拿走了……")
-                    DBConn.query("insert into customer values (" + sender.id + ", " + randNum + ",1,true);")
+                    DBConn.query("insert into customer values (" + sender.id + ", " + randNum + ",1,1,0);")
                 }
             }
         }
