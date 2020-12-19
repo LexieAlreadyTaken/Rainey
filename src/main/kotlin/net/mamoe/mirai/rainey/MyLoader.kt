@@ -473,7 +473,7 @@ suspend fun main() {
                             if (f_old.isBeforeFirst) {
                                 f_old.next()
                                 DBConn.query("update customer set friendliness = friendliness + "
-                                    +f_increase+";")
+                                    +f_increase+" where id = "+sender.id+";")
                                 when(f_old.getInt("friendliness") + f_increase){
                                     0 -> replies += "不过……真的是要送给阿雨吗？您确定？感觉阿雨肩膀上的责任又多了几分……"
                                     in 1..10 -> replies += "不过说实在的，阿雨诚惶诚恐，不明白为什么要送来这么贵重的礼物……"
