@@ -17,20 +17,16 @@ import net.mamoe.mirai.message.data.PlainText
 import net.mamoe.mirai.message.data.content
 import net.mamoe.mirai.utils.BotConfiguration
 import net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol
-import java.io.BufferedReader
 import java.io.File
-import java.io.InputStreamReader
 import java.net.URL
 import java.net.URLConnection
-import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
-import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-
+import org.json.JSONObject
 
 suspend fun main() {
     val qqId = 2028829835L//Bot的QQ号，需为Long类型，在结尾处添加大写L
@@ -249,9 +245,8 @@ suspend fun main() {
                 GlobalScope.launch {
                     apiResponse = URL("https://dog.ceo/api/breeds/image/random").readText()
                     reply(apiResponse)
-                    data class UserInfo(var message: String="", var status: String="")
-                    val reJson = Gson().fromJson(apiResponse, UserInfo::class.java)
-                    val url = URL(reJson.message)
+                    val reJson = JSONObject(apiResponse)
+                    val url = URL(reJson.getString("message"))
                     val conn: URLConnection = url.openConnection()
                     // 读取内容
                     conn.getInputStream().sendAsImage()
