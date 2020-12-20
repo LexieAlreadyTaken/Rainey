@@ -249,8 +249,9 @@ suspend fun main() {
             val br = BufferedReader(isr)
             var line = ""
             var temp = ""
-            while (br.readLine().also { temp = it } != null) {
+            while (temp!=null) {
                 line += temp
+                temp = br.readLine()
             }
             data class UserInfo(var message: String="", var status: String="")
             val reJson = Gson().fromJson(line, UserInfo::class.java)
