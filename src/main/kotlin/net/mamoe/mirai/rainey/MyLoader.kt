@@ -241,16 +241,10 @@ suspend fun main() {
             iss.sendAsImage()
         }
         (startsWith("∞¢”Í") and contains("π∑π∑")){
-            val preurl = URL("https://dog.ceo/api/breeds/image/random")
-            val preconn: URLConnection = preurl.openConnection()
+            val apiResponse = URL("https://dog.ceo/api/breeds/image/random").readText()
             // ∂¡»°ƒ⁄»›
-            val iss = preconn.getInputStream()
-            val isr = InputStreamReader(iss)
-            val br = BufferedReader(isr)
-            var line = br.readLine()
-            reply(line)
             data class UserInfo(var message: String="", var status: String="")
-            val reJson = Gson().fromJson(line, UserInfo::class.java)
+            val reJson = Gson().fromJson(apiResponse, UserInfo::class.java)
             val url = URL(reJson.message)
             val conn: URLConnection = url.openConnection()
             // ∂¡»°ƒ⁄»›
