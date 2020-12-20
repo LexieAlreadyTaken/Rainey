@@ -26,6 +26,7 @@ import java.net.URLEncoder
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
+import com.google.gson.Gson
 
 
 suspend fun main() {
@@ -238,6 +239,24 @@ suspend fun main() {
             // 读取内容
             val iss = preconn.getInputStream()
             iss.sendAsImage()
+        }
+        (startsWith("阿雨") and contains("狗狗")){
+            val preurl = URL("https://dog.ceo/api/breeds/image/random")
+            val preconn: URLConnection = preurl.openConnection()
+            // 读取内容
+            val iss = preconn.getInputStream()
+            val isr = InputStreamReader(iss)
+            val br = BufferedReader(isr)
+            var line: String = ""
+            while (br.readLine().also { line += it } != null) {
+                ;
+            }
+            data class UserInfo(var message: String="", var status: String="")
+            val reJson = Gson().fromJson(line, UserInfo::class.java)
+            val url = URL(reJson.message)
+            val conn: URLConnection = url.openConnection()
+            // 读取内容
+            conn.getInputStream().sendAsImage()
         }
 
         (startsWith("阿雨") and contains("生成")){
