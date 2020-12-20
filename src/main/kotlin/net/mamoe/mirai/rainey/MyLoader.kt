@@ -247,7 +247,7 @@ suspend fun main() {
                     val reJson = JSONObject(apiResponse)
                     val url = URL(reJson.getString("message"))
                     val conn: URLConnection = url.openConnection()
-                    // 读取内容
+                    conn.connectTimeout = 5000
                     conn.getInputStream().sendAsImage()
                 }
             }
@@ -261,7 +261,7 @@ suspend fun main() {
                     val reJson = JSONObject(apiResponse)
                     val url = URL(reJson.getString("url"))
                     val conn: URLConnection = url.openConnection()
-                    // 读取内容
+                    conn.connectTimeout = 5000
                     conn.getInputStream().sendAsImage()
                 }
             }
