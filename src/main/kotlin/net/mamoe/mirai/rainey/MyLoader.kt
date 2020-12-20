@@ -251,6 +251,7 @@ suspend fun main() {
             while (br.readLine().also { line += it } != null) {
                 ;
             }
+            reply(line)
             data class UserInfo(var message: String="", var status: String="")
             val reJson = Gson().fromJson(line, UserInfo::class.java)
             val url = URL(reJson.message)
