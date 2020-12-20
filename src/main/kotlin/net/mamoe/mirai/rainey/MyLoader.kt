@@ -244,9 +244,21 @@ suspend fun main() {
             runBlocking<Unit> {
                 GlobalScope.launch {
                     apiResponse = URL("https://dog.ceo/api/breeds/image/random").readText()
-                    reply(apiResponse)
                     val reJson = JSONObject(apiResponse)
                     val url = URL(reJson.getString("message"))
+                    val conn: URLConnection = url.openConnection()
+                    // ∂¡»°ƒ⁄»›
+                    conn.getInputStream().sendAsImage()
+                }
+            }
+        }
+        (startsWith("∞¢”Í") and contains("√®√®")){
+            var apiResponse = ""
+            runBlocking<Unit> {
+                GlobalScope.launch {
+                    apiResponse = URL("https://api.thecatapi.com/v1/images/search").readText()
+                    val reJson = JSONObject(apiResponse)
+                    val url = URL(reJson.getString("url"))
                     val conn: URLConnection = url.openConnection()
                     // ∂¡»°ƒ⁄»›
                     conn.getInputStream().sendAsImage()
