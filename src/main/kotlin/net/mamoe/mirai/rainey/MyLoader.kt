@@ -27,6 +27,9 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.util.*
 import com.google.gson.Gson
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 suspend fun main() {
@@ -241,14 +244,19 @@ suspend fun main() {
             iss.sendAsImage()
         }
         (startsWith("阿雨") and contains("狗狗")){
-            val apiResponse = URL("https://dog.ceo/api/breeds/image/random").readText()
-            // 读取内容
-            data class UserInfo(var message: String="", var status: String="")
-            val reJson = Gson().fromJson(apiResponse, UserInfo::class.java)
-            val url = URL(reJson.message)
-            val conn: URLConnection = url.openConnection()
-            // 读取内容
-            conn.getInputStream().sendAsImage()
+            var apiResponse = ""
+            runBlocking<Unit> {
+                GlobalScope.launch {
+                    apiResponse = URL("https://dog.ceo/api/breeds/image/random").readText()
+                }
+                //Work with the response here
+                data class UserInfo(var message: String="", var status: String="")
+                val reJson = Gson().fromJson(apiResponse, UserInfo::class.java)
+                val url = URL(reJson.message)
+                val conn: URLConnection = url.openConnection()
+                // 读取内容
+                conn.getInputStream().sendAsImage()
+            }
         }
 
         (startsWith("阿雨") and contains("生成")){
