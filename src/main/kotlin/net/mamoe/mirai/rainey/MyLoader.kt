@@ -247,11 +247,11 @@ suspend fun main() {
             val iss = preconn.getInputStream()
             val isr = InputStreamReader(iss)
             val br = BufferedReader(isr)
-            var line: String = ""
-            while (br.readLine().also { line += it } != null) {
-                ;
+            var line = ""
+            var temp = ""
+            while (br.readLine().also { temp = it } != null) {
+                line += temp
             }
-            reply(line)
             data class UserInfo(var message: String="", var status: String="")
             val reJson = Gson().fromJson(line, UserInfo::class.java)
             val url = URL(reJson.message)
