@@ -257,6 +257,7 @@ suspend fun main() {
             runBlocking<Unit> {
                 GlobalScope.launch {
                     apiResponse = URL("https://api.thecatapi.com/v1/images/search").readText()
+                    apiResponse = apiResponse.substring(1..(apiResponse.lastIndex-1))
                     val reJson = JSONObject(apiResponse)
                     val url = URL(reJson.getString("url"))
                     val conn: URLConnection = url.openConnection()
