@@ -27,6 +27,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.json.JSONObject
+import java.time.LocalDate
 
 suspend fun main() {
     val qqId = 2028829835L//Bot的QQ号，需为Long类型，在结尾处添加大写L
@@ -36,6 +37,7 @@ suspend fun main() {
     var thisMessage: String
     val fudued = arrayOfNulls<Boolean>(1)
     val retractOn = arrayOfNulls<Boolean>(1)
+    var todayy : LocalDate? = null
     //var welcomeMessage : String
     configuration.protocol = MiraiProtocol.ANDROID_PAD
     configuration.fileBasedDeviceInfo("deviceInfo.json")
@@ -49,6 +51,7 @@ suspend fun main() {
         (case("on")){
             fudued.set(0,false)
             retractOn.set(0,false)
+            todayy = LocalDate.now()
         }
 
         (startsWith("阿雨") and contains("开始复读")){
@@ -370,6 +373,11 @@ suspend fun main() {
     miraiBot.subscribeAlways<GroupMessageEvent>{
         if(message.content=="阿雨，哪里"){
             reply(""+group.id)
+        }
+        val noww = LocalDate.now()
+        if(noww.dayOfMonth == todayy?.dayOfMonth ?: 1){
+            DBConn.query("update customer set sign_in = 0 where signed_in = 0;")
+            DBConn.query("update customer set signed_in = 0;")
         }
         if(message.content.startsWith("阿雨") and message.content.contains("上架")){
             val m = Regex(""".*上架.*?“(.+)”.*?([0-9]+).*?""").find(message.contentToString())
